@@ -5,6 +5,8 @@ struct MyProfileView: View {
     
     @State private var showCreateLessonSheet: Bool = false
     @State private var showEditSkillsSheet: Bool = false
+    @State private var showProPaywallSheet: Bool = false
+    @State private var showAdPrivacySheet: Bool = false
     @State private var selectedLessonForDetail: Lesson? = nil
     
     var myCreatedLessons: [Lesson] {
@@ -47,6 +49,14 @@ struct MyProfileView: View {
                         myCreatedLessonsSection
                             .padding(.horizontal, 20)
                         
+                        // SkillSwap Pro Membership Banner / Status
+                        membershipStatusBanner
+                            .padding(.horizontal, 20)
+                        
+                        // Advertising & Privacy Settings Shortcut
+                        privacySettingsButton
+                            .padding(.horizontal, 20)
+                        
                         Spacer(minLength: 40)
                     }
                 }
@@ -72,6 +82,12 @@ struct MyProfileView: View {
             }
             .sheet(isPresented: $showEditSkillsSheet) {
                 EditSkillsSheet()
+            }
+            .sheet(isPresented: $showProPaywallSheet) {
+                SkillSwapProPaywallView()
+            }
+            .sheet(isPresented: $showAdPrivacySheet) {
+                AdSettingsSheet()
             }
             .navigationDestination(item: $selectedLessonForDetail) { lesson in
                 LessonDetailView(lesson: lesson)
@@ -379,6 +395,95 @@ struct MyProfileView: View {
                 }
             }
         }
+    }
+    
+    // MARK: - Pro Membership & Status Banner
+    private var membershipStatusBanner: some View {
+        let isPro = SubscriptionManager.shared.isProSubscribed
+        return Button {
+            showProPaywallSheet = true
+        } label: {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(isPro ? PlayfulTokens.goldSoft : PlayfulTokens.accentSoft)
+                        .frame(width: 44, height: 44)
+                    Image(systemName: isPro ? "bolt.fill" : "sparkles")
+                        .font(.system(size: 20, weight: .heavy))
+                        .foregroundStyle(isPro ? PlayfulTokens.goldDeep : PlayfulTokens.accent)
+                }
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Text(isPro ? "SkillSwap Pro Member" : "Upgrade to SkillSwap Pro")
+                            .font(PlayfulTokens.headlineFont)
+                            .foregroundStyle(PlayfulTokens.ink)
+                        if isPro {
+                            Text("PRO")
+                                .font(.system(size: 9, weight: .heavy, design: .rounded))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(PlayfulTokens.goldDeep)
+                                .clipShape(Capsule())
+                        }
+                    }
+                    
+                    Text(isPro ? "Zero ads • 2x XP boost • Streak protection" : "Remove all ads, get 2x XP boost, and unlock mentor perks")
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(PlayfulTokens.inkSecondary)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(PlayfulTokens.inkDisabled)
+            }
+            .padding(14)
+            .background(PlayfulTokens.surface)
+            .clipShape(RoundedRectangle(cornerRadius: PlayfulTokens.radiusCard, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: PlayfulTokens.radiusCard, style: .continuous)
+                    .strokeBorder(isPro ? PlayfulTokens.gold : PlayfulTokens.border, lineWidth: isPro ? 1.5 : 1)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+    
+    // MARK: - Ad Privacy & Safety Settings
+    private var privacySettingsButton: some View {
+        Button {
+            showAdPrivacySheet = true
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "shield.checkered")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(PlayfulTokens.positive)
+                
+                Text("Teen Privacy & Ad Controls")
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .foregroundStyle(PlayfulTokens.ink)
+                
+                Spacer()
+                
+                Text("Protected")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(PlayfulTokens.positive)
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(PlayfulTokens.inkDisabled)
+            }
+            .padding(14)
+            .background(PlayfulTokens.surface)
+            .clipShape(RoundedRectangle(cornerRadius: PlayfulTokens.radiusCard, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: PlayfulTokens.radiusCard, style: .continuous)
+                    .strokeBorder(PlayfulTokens.border, lineWidth: 1)
+            }
+        }
+        .buttonStyle(.plain)
     }
 }
 

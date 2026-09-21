@@ -30,6 +30,10 @@ struct HomeFeedView: View {
                         // Perfect Skill Matches Section
                         perfectSkillMatchesSection
                         
+                        // Contextual Non-Targeted Teen-Safe Ad (Hidden for Pro Subscribers)
+                        AdBannerView()
+                            .padding(.horizontal, 20)
+                        
                         // Recommended Lessons Section
                         recommendedLessonsSection
                         

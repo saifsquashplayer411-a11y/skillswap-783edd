@@ -24,6 +24,11 @@ class AppState: ObservableObject {
     @Published var activeCelebration: CelebrationEvent? = nil
     @Published var activeToastMessage: String? = nil
     
+    // Pro Subscription State Shortcut
+    var isProUser: Bool {
+        SubscriptionManager.shared.isProSubscribed
+    }
+    
     struct CelebrationEvent: Identifiable {
         var id = UUID()
         var title: String
@@ -200,8 +205,10 @@ class AppState: ObservableObject {
     }
     
     func addXP(amount: Int) {
-        currentUser.xp += amount
-        currentWeeklyXp += amount
+        // SkillSwap Pro gives a 2x XP multiplier bonus
+        let actualXP = isProUser ? (amount * 2) : amount
+        currentUser.xp += actualXP
+        currentWeeklyXp += actualXP
         
         let newLevelDef = LevelDefinition.current(for: currentUser.xp)
         if newLevelDef.level > currentUser.level {
